@@ -40,7 +40,18 @@ jobs:
       run: |
         pip3 install --user --upgrade buildozer cython virtualenv
 
-    - name: Patch buildozer.spec for CI
+    - name: Pre-install Android SDK & Accept Licenses
+      run: |
+        export ANDROID_HOME=~/.buildozer/android/platform/android-sdk
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        cd $ANDROID_HOME/cmdline-tools
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip -q cmdline-tools.zip
+        mv cmdline-tools latest
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
+    - name: Patch buildozer.spec (Force API 33 & Build-Tools 33)
       run: |
         echo "android.accept_sdk_license = True" >> buildozer.spec
         echo "android.api = 33" >> buildozer.spec
@@ -50,6 +61,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
+        export ANDROID_HOME=~/.buildozer/android/platform/android-sdk
+        export ANDROID_SDK_ROOT=$ANDROID_HOME
         export BUILDOZER_WARN_ON_ROOT=0
         buildozer android debug
 
