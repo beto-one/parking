@@ -28,7 +28,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        buildozer android debug
+        export BUILDOZER_WARN_ON_ROOT=0
+        yes | buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
