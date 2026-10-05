@@ -34,21 +34,25 @@ jobs:
       run: |
         pip3 install --user --upgrade buildozer cython virtualenv
 
-    - name: Accept Android SDK Licenses
+    - name: Pre-download and Accept Android SDK Licenses
       run: |
         export PATH=$PATH:~/.local/bin
-        yes | sdkmanager --licenses || true
+        mkdir -p ~/.buildozer/android/platform
+        cd ~/.buildozer/android/platform
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        mkdir -p android-sdk/cmdline-tools
+        unzip -q cmdline-tools.zip -d android-sdk/cmdline-tools
+        mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
+        export ANDROID_HOME=~/.buildozer/android/platform/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+        yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
         export BUILDOZER_WARN_ON_ROOT=0
         buildozer android debug
-      continue-on-error: false
-
-    - name: Find APK
-      run: |
-        find . -name "*.apk" -type f
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
