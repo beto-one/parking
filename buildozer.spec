@@ -5,7 +5,7 @@ package.domain = org.parking
 source.dir = .
 source.include_exts = py,ttf
 version = 0.1
-requirements = python3,kivy==2.3.0,pyjnius,android,arabic-reshaper,python-bidi==0.4.2,six
+requirements = python3==3.11.5,hostpython3==3.11.5,kivy==2.3.0,pyjnius,android,arabic-reshaper,python-bidi==0.4.2,six
 orientation = portrait
 fullscreen = 0
 android.api = 33
